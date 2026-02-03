@@ -1,0 +1,7 @@
+{
+  "name": "宠物领养平台",
+  "description": "一个温馨且现代化的宠物领养移动应用，连接爱心人士与待领养的毛孩子。支持浏览宠物、查看详情、在线咨询及申请领养。",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
