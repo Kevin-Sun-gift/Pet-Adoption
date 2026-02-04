@@ -1,11 +1,11 @@
 """
 图片上传 API 路由
-支持 Cloudflare R2 存储
+使用 Supabase Storage 存储
 """
 
 from fastapi import APIRouter, HTTPException, UploadFile, File
 
-from service.r2_service import r2_service
+from service import storage_service
 
 router = APIRouter(prefix="/upload", tags=["文件上传"])
 
@@ -17,7 +17,7 @@ MAX_SIZE = 10 * 1024 * 1024  # 10MB
 @router.post("/image")
 async def upload_image(file: UploadFile = File(..., description="图片文件")):
     """
-    上传图片到 Cloudflare R2
+    上传图片到 Supabase Storage
     
     支持格式: JPEG, PNG, GIF, WebP
     最大大小: 10MB
@@ -42,8 +42,8 @@ async def upload_image(file: UploadFile = File(..., description="图片文件"))
             detail=f"文件太大，最大支持 {MAX_SIZE // 1024 // 1024}MB"
         )
     
-    # 上传到 R2
-    url = r2_service.upload_image(
+    # 上传到 Supabase Storage
+    url = storage_service.upload_image(
         file_content=content,
         filename=file.filename or "image.jpg",
         content_type=file.content_type
@@ -52,7 +52,7 @@ async def upload_image(file: UploadFile = File(..., description="图片文件"))
     if not url:
         raise HTTPException(
             status_code=500, 
-            detail="图片上传失败，请检查 R2 配置"
+            detail="图片上传失败，请确保已在 Supabase 创建 pet-images 存储桶"
         )
     
     return {"success": True, "url": url}
@@ -61,7 +61,7 @@ async def upload_image(file: UploadFile = File(..., description="图片文件"))
 @router.delete("/image")
 async def delete_image(url: str):
     """删除图片"""
-    success = r2_service.delete_image(url)
+    success = storage_service.delete_image(url)
     if not success:
         raise HTTPException(status_code=500, detail="删除失败")
     return {"success": True, "message": "删除成功"}
