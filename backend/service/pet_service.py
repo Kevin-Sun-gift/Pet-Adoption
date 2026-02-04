@@ -13,8 +13,12 @@ def get_all_pets(
     """
     获取所有宠物列表
     支持按类型筛选和搜索
+    注意：已领养的宠物（is_adopted=true）不在 App 端显示
     """
     query = supabase.table("pets").select("*")
+    
+    # 过滤已领养的宠物（App 端不显示）
+    query = query.eq("is_adopted", False)
     
     # 按类型筛选
     if pet_type and pet_type != "all":

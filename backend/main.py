@@ -34,11 +34,23 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# 配置 CORS
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
+# 配置 CORS - 允许 Vercel 和本地开发访问
+# 从环境变量读取额外的允许源
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+cors_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+]
+# 添加环境变量中的额外源
+if cors_origins_env:
+    cors_origins.extend([origin.strip() for origin in cors_origins_env.split(",") if origin.strip()])
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # 允许所有 Vercel 子域名
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

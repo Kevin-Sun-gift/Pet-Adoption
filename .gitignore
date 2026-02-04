@@ -10,6 +10,8 @@ lerna-debug.log*
 # Dependencies
 node_modules
 backend/venv/
+admin/backend/venv/
+admin/node_modules/
 
 # Build outputs
 dist
@@ -23,6 +25,7 @@ build
 .env.local
 .env.*.local
 backend/.env
+admin/backend/.env
 
 # Editor directories and files
 .vscode/*
